@@ -1,0 +1,156 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// add the db models 
+model User {
+  id        Int       @id @default(autoincrement())
+  name      String
+  email     String    @unique
+  password  String
+  bookings  Booking[]
+  reviews   Review[]
+  payments  Payment[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Movie {
+  id        Int       @id @default(autoincrement())
+  title     String
+  genreId   Int
+  genre     Genre     @relation(fields: [genreId], references: [id])
+  screenings Screening[]
+  reviews   Review[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Genre {
+  id    Int     @id @default(autoincrement())
+  name  String
+  movies Movie[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Theater {
+  id         Int       @id @default(autoincrement())
+  name       String
+  location   String
+  screenings Screening[]
+  seats      Seat[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Screening {
+  id        Int       @id @default(autoincrement())
+  movieId   Int
+  theaterId Int
+  time      DateTime
+  movie     Movie     @relation(fields: [movieId], references: [id])
+  theater   Theater   @relation(fields: [theaterId], references: [id])
+  bookings  Booking[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Booking {
+  id          Int       @id @default(autoincrement())
+  userId      Int
+  screeningId Int
+  paymentId   Int?      @unique
+  user        User      @relation(fields: [userId], references: [id])
+  screening   Screening @relation(fields: [screeningId], references: [id])
+  payment     Payment?  @relation(fields: [paymentId], references: [id])
+  seats       BookingSeat[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Review {
+  id       Int     @id @default(autoincrement())
+  userId   Int
+  movieId  Int
+  content  String
+  rating   Int
+  user     User    @relation(fields: [userId], references: [id])
+  movie    Movie   @relation(fields: [movieId], references: [id])
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Payment {
+  id        Int       @id @default(autoincrement())
+  amount    Float
+  method    String
+  bookings  Booking[]
+  user      User[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Seat {
+  id        Int       @id @default(autoincrement())
+  number    String
+  theaterId Int
+  theater   Theater   @relation(fields: [theaterId], references: [id])
+  bookings  BookingSeat[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model BookingSeat {
+  bookingId Int
+  seatId    Int
+  booking   Booking @relation(fields: [bookingId], references: [id])
+  seat      Seat    @relation(fields: [seatId], references: [id])
+  
+  @@id([bookingId, seatId]) // Composite primary key
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+// Enum Definitions
+
+enum UserRole {
+  ADMIN
+  CUSTOMER
+}
+
+enum MovieRating {
+  G
+  PG
+  PG13
+  R
+  NC17
+}
+
+enum BookingStatus {
+  CONFIRMED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PAID
+  UNPAID
+}
+
+enum PaymentMethod {
+  CREDIT_CARD
+  PAYPAL
+}
+
+enum SeatType {
+  REGULAR
+  VIP
+}
