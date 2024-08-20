@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
 
+
 const prisma = new PrismaClient();
 
 // Handle POST requests
@@ -22,6 +23,7 @@ export async function POST(request: Request) {
     }
 
     // Return user data or token
+   
     return NextResponse.json({ message: 'Sign-in successful', user }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error: 'Error signing in' }, { status: 500 });

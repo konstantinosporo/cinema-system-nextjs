@@ -4,5 +4,6 @@ export const navLinks = [
   { href: '/movies', label: 'Movies' },
   { href: '/theaters', label: 'Theaters' },
   { href: '/contact', label: 'Contact' },
-  { href: '/signin', label: 'SignIn' },
+  { href: '/signin', label: 'Login' },
+  { href: '/signup', label: 'Signup' },
 ];

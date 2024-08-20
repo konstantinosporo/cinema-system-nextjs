@@ -44,8 +44,27 @@ const SignInSignUp = () => {
         setApiMessage('Sign Up successful!');
       } else {
         // Sign In API call
-        await axios.post('/api/auth/signin', formData);
-        setApiMessage('Sign In successful!');
+        try {
+          const response = await axios.post('/api/auth/signin', formData);
+
+          // Assuming the successful response contains a message
+          if (response.status === 200) {
+            setApiMessage(response.data.message || 'Sign In successful!HARDCODE');
+          }
+        } catch (error:any) {
+          if (error.response) {
+            // The request was made and the server responded with a status code
+            // that falls out of the range of 2xx
+            setApiMessage(error.response.data.error || 'An error occurred during sign in');
+          } else if (error.request) {
+            // The request was made but no response was received
+            setApiMessage('No response received from the server.');
+          } else {
+            // Something happened in setting up the request that triggered an Error
+            setApiMessage('Error in setting up the request.');
+          }
+        }
+
       }
     } catch (error: any) {
       if (error.response) {
